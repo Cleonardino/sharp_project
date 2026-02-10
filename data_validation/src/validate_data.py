@@ -31,8 +31,8 @@ class DatasetValidatorExtractor:
         self.images_dir = Path(images_dir)
         self.annotations_dir = Path(annotations_dir)
         self.errors = []
-        self.images = []
-        self.annotations = []
+        self.images = self._retrieve_images()
+        self.annotations = self._retrieve_annotations()
 
     def validate(self) -> bool:
         """
@@ -41,7 +41,7 @@ class DatasetValidatorExtractor:
         Returns:
             True if all is validated, else False
         """
-
+        
         print("\nChecking files consistency")
         self._check_files_consistency()
         
@@ -55,7 +55,7 @@ class DatasetValidatorExtractor:
     def _check_files_consistency(self) -> None:
         """Check consistency between images and their annotations"""
         # Retrieve images
-        self.images = self._retrieve_images()
+        
         image_stems = {f.stem for f in self.images}
 
         # Retriever annotations
@@ -89,11 +89,10 @@ class DatasetValidatorExtractor:
 
     def _check_files_integrity(self) -> None:
         """Check image and annotation files integrity"""
-        image_files = self._retrieve_images()
         corrupted_images = []
         invalid_dimensions = []
 
-        for img_path in image_files:
+        for img_path in self.images:
             try:
                 with Image.open(img_path) as img:
                     # Check if image can be loaded
@@ -137,6 +136,72 @@ class DatasetValidatorExtractor:
                 )
             else:
                 print("All annotations validated")
+
+    def _check_classes_and_labels(self) -> None:
+        """Check that classes are as expected."""
+        if not self.annotations:
+            return
+
+        all_classes = set()
+        invalid_classes = {}
+        class_distribution = {cls: 0 for cls in self.VALID_CLASSES}
+
+        for name, content in self.annotations.items():
+            lines = content.strip().split('\n')
+
+            for line_num, line in enumerate(lines, 1):
+                if not line.strip():
+                    continue
+
+                parts = line.strip().split()
+
+                if len(parts) < 5:
+                    self.errors.append(
+                        f"{name}: line {line_num}: invalid format (expected: class x y w h)"
+                    )
+                    continue
+
+                # Class is an index, needs to be mapped
+                try:
+                    class_idx = int(parts[0])
+                    # Supposing the order is 0,1,2,3,4,5.
+                    class_names = sorted(list(self.VALID_CLASSES))
+
+                    if 0 <= class_idx < len(class_names):
+                        class_name = class_names[class_idx]
+                        all_classes.add(class_name)
+                        class_distribution[class_name] += 1
+                    else:
+                        if name not in invalid_classes:
+                            invalid_classes[name] = []
+                        invalid_classes[name].append(f"line {line_num}: invalid class {class_idx}")
+
+                except ValueError:
+                    if name not in invalid_classes:
+                        invalid_classes[name] = []
+                    invalid_classes[name].append(f"line {line_num}: non numerical class")
+
+        # Checking invalid classes
+        if invalid_classes:
+            error_msg = f"{len(invalid_classes)} file(s) with invalid classes:"
+            for name, errors in list(invalid_classes.items())[:3]:
+                error_msg += f"\n      - {name}: {errors[0]}"
+            self.errors.append(error_msg)
+
+        # Checking missing classes
+        missing_classes = self.VALID_CLASSES - all_classes
+        if missing_classes:
+            self.errors.append(
+                f"Classes not in dataset: {missing_classes}"
+            )
+
+        # Display distribution
+        print(f"Detected classes: {sorted(all_classes)}")
+        print("\nDistribution:")
+        for cls in sorted(class_distribution.keys()):
+            count = class_distribution[cls]
+            if count > 0:
+                print(f"      - {cls}: {count} instances")
 
     def _retrieve_images(self):
         """Retrieve all image files"""
