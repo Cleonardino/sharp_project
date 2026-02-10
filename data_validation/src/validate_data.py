@@ -4,6 +4,7 @@ Vérifie la cohérence, l'intégrité et les classes du dataset
 """
 import zipfile
 from pathlib import Path
+from PIL import Image
 
 class DatasetValidator:
     """Class used to validate a dataset"""
@@ -41,6 +42,9 @@ class DatasetValidator:
 
         print("\nChecking files consistency")
         self._check_files_consistency()
+        
+        print("\nChecking files integrity")
+        self._check_files_integrity()
 
         self._print_report()
 
@@ -80,6 +84,57 @@ class DatasetValidator:
 
         print(f"{len(annotation_stems)} annotations found")
         print(f"{len(image_stems & annotation_stems)} image/annotation couples validated")
+
+    def _check_files_integrity(self) -> None:
+        """Check image and annotation files integrity"""
+        image_files = self._get_image_files()
+        corrupted_images = []
+        invalid_dimensions = []
+
+        for img_path in image_files:
+            try:
+                with Image.open(img_path) as img:
+                    # Check if image can be loaded
+                    img.verify()
+
+                # Reopen to check dimensions
+                with Image.open(img_path) as img:
+                    width, height = img.size
+                    if width < 10 or height < 10:
+                        invalid_dimensions.append(f"{img_path.name} ({width}x{height})")
+
+            except Exception as e:
+                corrupted_images.append(f"{img_path.name}: {str(e)}")
+
+        if corrupted_images:
+            self.errors.append(
+                f"{len(corrupted_images)} corrupted image(s): {corrupted_images[:5]}..."
+            )
+        else:
+            print("   All images are valid")
+        
+        if invalid_dimensions:
+            self.errors.append(
+                f"{len(invalid_dimensions)} image(s) with invalid dimensions: "
+                f"{invalid_dimensions[:5]}..."
+            )
+        
+        # Check annotations integrity
+        annotations = self._get_annotations()
+        if annotations:
+            invalid_annotations = []
+            
+            for name, content in annotations.items():
+                if not content or content.strip() == "":
+                    invalid_annotations.append(f"{name}: empty file")
+            
+            if invalid_annotations:
+                self.errors.append(
+                    f"{len(invalid_annotations)} empty annotation(s): "
+                    f"{invalid_annotations[:5]}..."
+                )
+            else:
+                print("All annotations validated")
 
     def _get_image_files(self):
         """Get all image files"""
