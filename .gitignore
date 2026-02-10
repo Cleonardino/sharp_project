@@ -1,7 +1,7 @@
 .venv
 .env
 dataset
-output
+prepared_data
 __pycache__
 *.db
 *.pt

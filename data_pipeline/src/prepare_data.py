@@ -25,6 +25,7 @@ class DatasetSplitter:
         train_ratio: float = 0.6,
         val_ratio: float = 0.2,
         test_ratio: float = 0.2,
+        class_names: List[str] = ["0", "1", "2", "3", "4", "5"],
         seed: int = 42,
         skip_missing_annotations: bool = False
     ):
@@ -34,6 +35,7 @@ class DatasetSplitter:
         self.train_ratio = train_ratio
         self.val_ratio = val_ratio
         self.test_ratio = test_ratio
+        self.class_names = class_names
         self.seed = seed
         self.skip_missing_annotations = skip_missing_annotations
 
@@ -177,6 +179,91 @@ class DatasetSplitter:
 
         return train, val, test
 
+    def write_splits_to_disk(self,
+    ) -> Path:
+        """
+        Step 3: Write split data to disk in YOLO format
+        
+        Args:
+            train_data: Training samples in RAM
+            val_data: Validation samples in RAM
+            test_data: Test samples in RAM
+            output_dir: Root directory for output
+            
+        Returns:
+            Path to the dataset root
+        """
+        print("\n" + "="*80)
+        print("STEP 3: WRITING SPLITS TO DISK")
+        print("="*80)
+        
+        train_data, val_data, test_data = self.split()
+
+        def write_split(samples: List[SampleInRAM], split_name: str) -> None:
+            """Write a single split to disk"""
+            images_dir = self.output_dir / split_name / "images"
+            labels_dir = self.output_dir / split_name / "labels"
+            annotations_dir = self.output_dir / split_name / "annotations"
+            
+            images_dir.mkdir(parents=True, exist_ok=True)
+            labels_dir.mkdir(parents=True, exist_ok=True)
+            annotations_dir.mkdir(parents=True, exist_ok=True)
+            
+            # Write images, labels and annotations
+            for sample in samples:
+                # Write image
+                image_path = images_dir / f"{sample.stem}.jpg"
+                image_path.write_bytes(sample.image_bytes)
+                
+                # Write label (for YOLO training)
+                label_path = labels_dir / f"{sample.stem}.txt"
+                label_path.write_text(sample.annotation_txt, encoding="utf-8")
+                
+                # Write annotation (for validation compatibility)
+                annotation_path = annotations_dir / f"{sample.stem}.txt"
+                annotation_path.write_text(sample.annotation_txt, encoding="utf-8")
+            
+            print(f"  ✓ {split_name:5s}: {len(samples):4d} samples written")
+        
+        write_split(train_data, "train")
+        write_split(val_data, "val")
+        write_split(test_data, "test")
+        print(f"✓ All splits written to: {self.output_dir}")
+        
+        self._write_dataset_yaml()
+
+        return self.output_dir
+
+    def _write_dataset_yaml(self) -> None:
+        """Write YOLO dataset.yaml configuration file"""
+        train_images = self.output_dir / "train" / "images"
+        val_images = self.output_dir / "val" / "images"
+        test_images = self.output_dir / "test" / "images"
+        
+        if not train_images.exists():
+            raise FileNotFoundError(f"Missing: {train_images}")
+        if not val_images.exists():
+            raise FileNotFoundError(f"Missing: {val_images}")
+        
+        lines = [
+            f"path: {self.output_dir.as_posix()}",
+            "train: train/images",
+            "val: val/images",
+        ]
+        
+        if test_images.exists():
+            lines.append("test: test/images")
+        
+        lines.extend([
+            f"nc: {len(self.class_names)}",
+            "names:",
+        ])
+        
+        for i, name in enumerate(self.class_names):
+            lines.append(f"  {i}: {name}")
+        yaml_path = self.output_dir / "dataset.yaml"
+        yaml_path.write_text("\n".join(lines), encoding="utf-8")
+        print(f"✓ Dataset YAML created: {yaml_path}")
 
 if __name__ == "__main__":
     splitter = DatasetSplitter(

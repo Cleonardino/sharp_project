@@ -58,136 +58,6 @@ class TrainingConfig:
         if not cls.PICSELLIA_TOKEN:
             raise ValueError("PICSELLIA_TOKEN not found in .env file")
 
-
-# ============================================================================
-# Data Pipeline Functions
-# ============================================================================
-
-def step_1_import_data(config: TrainingConfig, force_download: bool = False) -> None:
-    """
-    Step 1: Download dataset from Picsellia
-    
-    Args:
-        config: Training configuration
-        force_download: If True, re-download even if data exists
-    """
-    print("\n" + "="*80)
-    print("STEP 1: IMPORTING DATA FROM PICSELLIA")
-    print("="*80)
-    
-    if config.RAW_IMAGES_DIR.exists() and not force_download:
-        print(f"✓ Data already exists at {config.RAW_IMAGES_DIR}")
-        print("  Use force_download=True to re-download")
-        return
-    
-    # Create directories
-    config.RAW_IMAGES_DIR.mkdir(parents=True, exist_ok=True)
-    config.RAW_ANNOTATIONS_DIR.mkdir(parents=True, exist_ok=True)
-    
-    # Download from Picsellia
-    download_dataset(
-        output_image_dir=str(config.RAW_IMAGES_DIR),
-        output_annotations_dir=str(config.RAW_ANNOTATIONS_DIR)
-    )
-    
-    print(f"✓ Data imported successfully")
-    print(f"  Images: {config.RAW_IMAGES_DIR}")
-    print(f"  Annotations: {config.RAW_ANNOTATIONS_DIR}")
-
-
-def step_2_split_data(config: TrainingConfig) -> tuple:
-    """
-    Step 2: Split dataset into train/val/test
-    
-    Returns:
-        Tuple of (train_samples, val_samples, test_samples)
-    """
-    print("\n" + "="*80)
-    print("STEP 2: SPLITTING DATA INTO TRAIN/VAL/TEST")
-    print("="*80)
-    
-    splitter = DatasetSplitter(
-        images_dir=str(config.RAW_IMAGES_DIR),
-        annotations_dir=str(config.RAW_ANNOTATIONS_DIR),
-        output_dir=str(config.OUTPUT_DIR),
-        train_ratio=config.TRAIN_RATIO,
-        val_ratio=config.VAL_RATIO,
-        test_ratio=config.TEST_RATIO,
-        seed=config.SEED,
-        skip_missing_annotations=False
-    )
-    
-    train_data, val_data, test_data = splitter.split()
-    
-    print(f"✓ Dataset split completed:")
-    print(f"  Train: {len(train_data)} samples ({config.TRAIN_RATIO*100:.0f}%)")
-    print(f"  Val:   {len(val_data)} samples ({config.VAL_RATIO*100:.0f}%)")
-    print(f"  Test:  {len(test_data)} samples ({config.TEST_RATIO*100:.0f}%)")
-    
-    if splitter.errors:
-        print("\n⚠ Warnings during split:")
-        for error in splitter.errors:
-            print(f"  - {error}")
-    
-    return train_data, val_data, test_data
-
-
-def step_3_write_splits_to_disk(
-    train_data: List[SampleInRAM],
-    val_data: List[SampleInRAM],
-    test_data: List[SampleInRAM],
-    output_dir: Path
-) -> Path:
-    """
-    Step 3: Write split data to disk in YOLO format
-    
-    Args:
-        train_data: Training samples in RAM
-        val_data: Validation samples in RAM
-        test_data: Test samples in RAM
-        output_dir: Root directory for output
-        
-    Returns:
-        Path to the dataset root
-    """
-    print("\n" + "="*80)
-    print("STEP 3: WRITING SPLITS TO DISK")
-    print("="*80)
-    
-    def write_split(samples: List[SampleInRAM], split_name: str) -> None:
-        """Write a single split to disk"""
-        images_dir = output_dir / split_name / "images"
-        labels_dir = output_dir / split_name / "labels"
-        annotations_dir = output_dir / split_name / "annotations"
-        
-        images_dir.mkdir(parents=True, exist_ok=True)
-        labels_dir.mkdir(parents=True, exist_ok=True)
-        annotations_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Write images, labels and annotations
-        for sample in samples:
-            # Write image
-            image_path = images_dir / f"{sample.stem}.jpg"
-            image_path.write_bytes(sample.image_bytes)
-            
-            # Write label (for YOLO training)
-            label_path = labels_dir / f"{sample.stem}.txt"
-            label_path.write_text(sample.annotation_txt, encoding="utf-8")
-            
-            # Write annotation (for validation compatibility)
-            annotation_path = annotations_dir / f"{sample.stem}.txt"
-            annotation_path.write_text(sample.annotation_txt, encoding="utf-8")
-        
-        print(f"  ✓ {split_name:5s}: {len(samples):4d} samples written")
-    
-    write_split(train_data, "train")
-    write_split(val_data, "val")
-    write_split(test_data, "test")
-    
-    print(f"✓ All splits written to: {output_dir}")
-    return output_dir
-
-
 # ============================================================================
 # Training Functions (adapted from train.py)
 # ============================================================================
@@ -521,16 +391,9 @@ def run_complete_pipeline(
     config = TrainingConfig()
     config.load_env()
     
-    # Step 1: Import data
-    step_1_import_data(config, force_download=force_download)
-    
     # Step 2: Split data
     train_data, val_data, test_data = step_2_split_data(config)
-    
-    # Step 3: Write to disk
-    dataset_root = step_3_write_splits_to_disk(
-        train_data, val_data, test_data, config.OUTPUT_DIR
-    )
+
     
     # Step 5: Train
     run_id = step_5_train_yolo(
