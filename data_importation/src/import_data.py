@@ -28,6 +28,6 @@ def download_dataset():
     
     dataset_version.export_annotation_file(
         annotation_file_type=AnnotationFileType.YOLO,
-        output_path=annotations_dir
+        target_path=annotations_dir
     )
     print(f"import_data -> YOLO annotations exported to {annotations_dir}")
