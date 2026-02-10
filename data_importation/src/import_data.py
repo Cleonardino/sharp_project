@@ -1,26 +1,25 @@
 from picsellia import Client
 from dotenv import load_dotenv
 import os
+import config as cf
 
-load_dotenv("config/.env")
+def download_dataset():
+    load_dotenv("config/.env")
 
-PICSELLIA_TOKEN = os.getenv("PICSELLIA_TOKEN")
-PICSELLIA_ORGANIZATION = os.getenv("PICSELLIA_ORGANIZATION")
-PICSELLIA_DATASET = os.getenv("PICSELLIA_DATASET")
-PICSELLIA_VERSION = os.getenv("PICSELLIA_VERSION")
+    PICSELLIA_TOKEN = os.getenv("PICSELLIA_TOKEN")
 
-client = Client(
-    api_token=PICSELLIA_TOKEN,
-    organization_name=PICSELLIA_ORGANIZATION
+    client = Client(
+        api_token=PICSELLIA_TOKEN,
+        organization_name=cf.PICSELLIA_ORGANIZATION
+        )
+
+    dataset = client.get_dataset(name=cf.PICSELLIA_DATASET)
+
+    dataset_version = dataset.get_version(cf.PICSELLIA_VERSION)
+
+    output_dir = "./dataset"
+    dataset_version.download(
+        target_path=output_dir
     )
 
-dataset = client.get_dataset(name=PICSELLIA_DATASET)
-
-dataset_version = dataset.get_version(PICSELLIA_VERSION)
-
-output_dir = "./dataset"
-dataset_version.download(
-    target_path=output_dir
-)
-
-print(f"import_data -> Dataset downloaded to {output_dir}")
+    print(f"import_data -> Dataset downloaded to {output_dir}")
