@@ -2,7 +2,6 @@
 This module proposes a function to download the dataset from picsellia, dowload_dataset
 """
 import os
-import shutil
 from picsellia import Client
 from picsellia.types.enums import AnnotationFileType
 from dotenv import load_dotenv
