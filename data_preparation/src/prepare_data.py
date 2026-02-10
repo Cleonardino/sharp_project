@@ -74,7 +74,7 @@ class DatasetSplitter:
         if not zip_files:
             self.errors.append("No zip annotation file found")
             return None
-
+        print(zip_files)
         zip_path = zip_files[0]
         print(f"Reading annotations from {zip_path.name}")
 
