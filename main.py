@@ -2,23 +2,23 @@
 This is the SHARP Project main entry point, containing a menu that let the user chose which part of
 the project is executed
 """
+
+import config.config as cf
 from data_importation.src.import_data import download_dataset
+from data_validation.src.validate_data import DatasetValidator
 
 def display_menu():
-    """
-    Display all the options available
-    """
+    """Display all the options available"""
     print("\n" + "="*40)
     print("OPTIONS AVAILABLE")
     print("="*40)
     print("1. Download Dataset")
+    print("2. Validate Dataset")
     print("5. Exit")
     print("="*40)
 
 def main():
-    """
-    Main Entry Point. Get user input to what part of the project needs to be executed.
-    """
+    """Main Entry Point. Get user input to what part of the project needs to be executed"""
     while True:
         display_menu()
 
@@ -26,7 +26,15 @@ def main():
 
         # Execute action based on choice
         if choice == "1":
-            download_dataset()
+            download_dataset(
+                cf.IMAGE_DIR,
+                cf.ANNOTATION_DIR
+            )
+        elif choice == "2":
+            DatasetValidator(
+                cf.IMAGE_DIR,
+                cf.ANNOTATION_DIR
+            ).validate()
         elif choice == "5":
             print("\nExiting now")
             break

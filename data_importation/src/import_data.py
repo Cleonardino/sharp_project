@@ -7,7 +7,7 @@ from picsellia.types.enums import AnnotationFileType
 from dotenv import load_dotenv
 import config.config as cf
 
-def download_dataset():
+def download_dataset(output_image_dir, output_annotations_dir):
     """
     Download the picsellia dataset using the key in the .env file
     and the values in the config.py file.
@@ -26,17 +26,15 @@ def download_dataset():
 
     dataset_version = dataset.get_version(cf.PICSELLIA_VERSION)
 
-    image_dir = "./dataset/images"
-    annotations_dir = "./dataset/annotations"
     dataset_version.download(
-        target_path=image_dir
+        target_path=output_image_dir
     )
 
-    print(f"import_data -> Dataset downloaded to {image_dir}")
+    print(f"import_data -> Dataset downloaded to {output_image_dir}")
 
     dataset_version.export_annotation_file(
         annotation_file_type=AnnotationFileType.YOLO,
-        target_path=annotations_dir
+        target_path=output_annotations_dir
     )
 
-    print(f"import_data -> YOLO annotations exported to {annotations_dir}")
+    print(f"import_data -> YOLO annotations exported to {output_annotations_dir}")
