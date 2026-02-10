@@ -1,3 +1,7 @@
+"""
+This is the SHARP Project main entry point, containing a menu that let the user chose which part of
+the project is executed
+"""
 from data_importation.src.import_data import download_dataset
 
 def display_menu():
@@ -17,9 +21,9 @@ def main():
     """
     while True:
         display_menu()
-        
+
         choice = input("\nEnter your choice (1-5): ").strip()
-        
+
         # Execute action based on choice
         if choice == "1":
             download_dataset()
@@ -28,7 +32,7 @@ def main():
             break
         else:
             print("\nInvalid choice! Please enter a number between 1 and 5.")
-        
+
         # Pause before showing menu again
         input("\nPress Enter to continue...")
 
