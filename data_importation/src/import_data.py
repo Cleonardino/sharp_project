@@ -2,10 +2,12 @@
 This module proposes a function to download the dataset from picsellia, dowload_dataset
 """
 import os
+import shutil
 from picsellia import Client
 from picsellia.types.enums import AnnotationFileType
 from dotenv import load_dotenv
 import config.config as cf
+
 
 def download_dataset(output_image_dir, output_annotations_dir):
     """
