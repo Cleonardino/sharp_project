@@ -12,12 +12,13 @@ def download_dataset():
     Download the picsellia dataset using the key in the .env file
     and the values in the config.py file.
     """
+
     load_dotenv("config/.env")
 
-    PICSELLIA_TOKEN = os.getenv("PICSELLIA_TOKEN")
+    picsellia_token = os.getenv("PICSELLIA_TOKEN")
 
     client = Client(
-        api_token=PICSELLIA_TOKEN,
+        api_token=picsellia_token,
         organization_name=cf.PICSELLIA_ORGANIZATION
         )
 

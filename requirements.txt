@@ -1,2 +1,4 @@
 picsellia
 dotenv
+mlflow
+ultralytics
