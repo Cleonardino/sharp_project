@@ -20,8 +20,7 @@ dataset_version = dataset.get_version(PICSELLIA_VERSION)
 
 output_dir = "./dataset"
 dataset_version.download(
-    target_path=output_dir,
-    with_annotations=True
+    target_path=output_dir
 )
 
 print(f"import_data -> Dataset downloaded to {output_dir}")
