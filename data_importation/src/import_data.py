@@ -28,14 +28,16 @@ def download_dataset(output_image_dir, output_annotations_dir):
     dataset_version = dataset.get_version(cf.PICSELLIA_VERSION)
 
     dataset_version.download(
-        target_path=output_image_dir
+        target_path=output_image_dir,
+        use_id=True
     )
 
     print(f"import_data -> Dataset downloaded to {output_image_dir}")
 
     dataset_version.export_annotation_file(
         annotation_file_type=AnnotationFileType.YOLO,
-        target_path=output_annotations_dir
+        target_path=output_annotations_dir,
+        use_id=True
     )
 
     print(f"import_data -> YOLO annotations exported to {output_annotations_dir}")
