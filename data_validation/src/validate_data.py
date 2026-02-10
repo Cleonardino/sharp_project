@@ -6,8 +6,8 @@ import zipfile
 from pathlib import Path
 from PIL import Image
 
-class DatasetValidator:
-    """Class used to validate a dataset"""
+class DatasetValidatorExtractor:
+    """Class used to validate and extract a dataset"""
 
     VALID_CLASSES = {
         "0",
@@ -31,6 +31,8 @@ class DatasetValidator:
         self.images_dir = Path(images_dir)
         self.annotations_dir = Path(annotations_dir)
         self.errors = []
+        self.images = []
+        self.annotations = []
 
     def validate(self) -> bool:
         """
@@ -53,18 +55,18 @@ class DatasetValidator:
     def _check_files_consistency(self) -> None:
         """Check consistency between images and their annotations"""
         # Retrieve images
-        image_files = self._get_image_files()
-        image_stems = {f.stem for f in image_files}
+        self.images = self._retrieve_images()
+        image_stems = {f.stem for f in self.images}
 
         # Retriever annotations
-        annotations = self._get_annotations()
+        self.annotations = self._retrieve_annotations()
 
-        if annotations is None:
+        if self.annotations is None:
             self.errors.append("No annotations found")
             return
 
         # Checking consistency
-        annotation_stems = set(annotations.keys())
+        annotation_stems = set(self.annotations.keys())
         # Images without annotations
         images_without_annotations = image_stems - annotation_stems
         if images_without_annotations:
@@ -87,7 +89,7 @@ class DatasetValidator:
 
     def _check_files_integrity(self) -> None:
         """Check image and annotation files integrity"""
-        image_files = self._get_image_files()
+        image_files = self._retrieve_images()
         corrupted_images = []
         invalid_dimensions = []
 
@@ -111,7 +113,7 @@ class DatasetValidator:
                 f"{len(corrupted_images)} corrupted image(s): {corrupted_images[:5]}..."
             )
         else:
-            print("   All images are valid")
+            print("All images are valid")
         
         if invalid_dimensions:
             self.errors.append(
@@ -120,14 +122,14 @@ class DatasetValidator:
             )
         
         # Check annotations integrity
-        annotations = self._get_annotations()
+        annotations = self._retrieve_annotations()
         if annotations:
             invalid_annotations = []
-            
+
             for name, content in annotations.items():
                 if not content or content.strip() == "":
                     invalid_annotations.append(f"{name}: empty file")
-            
+
             if invalid_annotations:
                 self.errors.append(
                     f"{len(invalid_annotations)} empty annotation(s): "
@@ -136,8 +138,8 @@ class DatasetValidator:
             else:
                 print("All annotations validated")
 
-    def _get_image_files(self):
-        """Get all image files"""
+    def _retrieve_images(self):
+        """Retrieve all image files"""
         image_files = []
 
         for ext in self.VALID_IMAGE_EXTENSIONS:
@@ -146,7 +148,7 @@ class DatasetValidator:
 
         return sorted(image_files)
 
-    def _get_annotations(self):
+    def _retrieve_annotations(self):
         """
         Retrieve annotations from a zip file
         
@@ -190,3 +192,11 @@ class DatasetValidator:
         else:
             print("Validation failed")
         print("=" * 60 + "\n")
+
+    def get_images(self):
+        """Return the images extracted"""
+        return self.images
+
+    def get_annotations(self):
+        """Return the annotations extracted"""
+        return self.annotations
