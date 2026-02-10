@@ -1,7 +1,7 @@
 from picsellia import Client
 from dotenv import load_dotenv
 import os
-import data_importation.src.config as cf
+import config.config as cf
 
 def download_dataset():
     load_dotenv("config/.env")
