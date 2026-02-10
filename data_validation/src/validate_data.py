@@ -41,12 +41,15 @@ class DatasetValidatorExtractor:
         Returns:
             True if all is validated, else False
         """
-        
+
         print("\nChecking files consistency")
         self._check_files_consistency()
-        
+
         print("\nChecking files integrity")
         self._check_files_integrity()
+        
+        print("\nChecking labels")
+        self._check_classes_and_labels()
 
         self._print_report()
 
