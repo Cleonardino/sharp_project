@@ -6,7 +6,7 @@ import mlflow
 from ultralytics import YOLO
 
 # IMPORTANT: importe ta classe
-from data_validation_extraction.src.validate_extract_data import DatasetValidatorExtractor
+from data_pipeline.src.validate_extract_data import DatasetValidatorExtractor
 
 
 import zipfile

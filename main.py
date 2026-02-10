@@ -4,8 +4,8 @@ the project is executed
 """
 
 import config.config as cf
-from data_importation.src.import_data import download_dataset
-from data_validation_extraction.src.validate_extract_data import DatasetValidatorExtractor
+from data_pipeline.src.import_data import download_dataset
+from data_pipeline.src.validate_extract_data import DatasetValidatorExtractor
 
 def display_menu():
     """Display all the options available"""
