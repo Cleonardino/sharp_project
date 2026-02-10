@@ -47,7 +47,7 @@ class DatasetValidatorExtractor:
 
         print("\nChecking files integrity")
         self._check_files_integrity()
-        
+
         print("\nChecking labels")
         self._check_classes_and_labels()
 
@@ -58,7 +58,7 @@ class DatasetValidatorExtractor:
     def _check_files_consistency(self) -> None:
         """Check consistency between images and their annotations"""
         # Retrieve images
-        
+
         image_stems = {f.stem for f in self.images}
 
         # Retriever annotations
@@ -74,8 +74,8 @@ class DatasetValidatorExtractor:
         images_without_annotations = image_stems - annotation_stems
         if images_without_annotations:
             self.errors.append(
-                f"{len(images_without_annotations)} image(s) without annotation.",
-                "Here some examples:",
+                f"{len(images_without_annotations)} image(s) without annotation.\n" +
+                "Here some examples:\n" +
                 f"{list(images_without_annotations)[:5]}..."
             )
 
@@ -116,13 +116,13 @@ class DatasetValidatorExtractor:
             )
         else:
             print("All images are valid")
-        
+
         if invalid_dimensions:
             self.errors.append(
                 f"{len(invalid_dimensions)} image(s) with invalid dimensions: "
                 f"{invalid_dimensions[:5]}..."
             )
-        
+
         # Check annotations integrity
         annotations = self._retrieve_annotations()
         if annotations:
@@ -215,7 +215,7 @@ class DatasetValidatorExtractor:
             image_files.extend(self.images_dir.glob(f"*{ext.upper()}"))
 
         print(f"images detected:{len(image_files)}")
-        
+
         return sorted(image_files)
 
     def _retrieve_annotations(self):
