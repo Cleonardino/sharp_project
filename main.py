@@ -28,12 +28,12 @@ def main():
         if choice == "1":
             download_dataset(
                 cf.IMAGE_DIR,
-                cf.ANNOTATION_DIR
+                cf.ANNOTATION_ZIP_DIR
             )
         elif choice == "2":
             DatasetValidatorExtractor(
                 cf.IMAGE_DIR,
-                cf.ANNOTATION_DIR
+                cf.ANNOTATION_ZIP_DIR
             ).validate()
         elif choice == "5":
             print("\nExiting now")

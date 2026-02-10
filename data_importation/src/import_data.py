@@ -2,6 +2,8 @@
 This module proposes a function to download the dataset from picsellia, dowload_dataset
 """
 import os
+import zipfile
+from pathlib import Path
 from picsellia import Client
 from picsellia.types.enums import AnnotationFileType
 from dotenv import load_dotenv
@@ -38,4 +40,12 @@ def download_dataset(output_image_dir, output_annotations_dir):
         target_path=output_annotations_dir
     )
 
-    print(f"import_data -> YOLO annotations exported to {output_annotations_dir}")
+    print(f"import_data -> YOLO annotations exported to {output_annotations_dir} as zip file")
+
+    zip_files = list(Path(cf.ANNOTATION_ZIP_DIR).rglob("*.zip"))
+    if zip_files:
+        zip_path = zip_files[0]
+        with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(cf.ANNOTATION_DIR)
+    else:
+        print("No zip annotation file found")
