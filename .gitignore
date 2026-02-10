@@ -5,3 +5,4 @@ prepared_data
 __pycache__
 *.db
 *.pt
+runs
