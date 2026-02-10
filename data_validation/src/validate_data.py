@@ -101,7 +101,7 @@ class DatasetValidator:
         annotations = {}
 
         # Retrieving the zip file
-        zip_files = list(self.annotations_dir.glob("*.zip"))
+        zip_files = list(self.annotations_dir.rglob("*.zip"))
 
         if zip_files:
             zip_path = zip_files[0]
