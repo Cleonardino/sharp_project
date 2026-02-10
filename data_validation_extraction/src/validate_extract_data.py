@@ -212,7 +212,6 @@ class DatasetValidatorExtractor:
 
         for ext in self.VALID_IMAGE_EXTENSIONS:
             image_files.extend(self.images_dir.glob(f"*{ext}"))
-            image_files.extend(self.images_dir.glob(f"*{ext.upper()}"))
 
         print(f"images detected:{len(image_files)}")
 
