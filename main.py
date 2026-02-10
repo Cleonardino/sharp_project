@@ -5,7 +5,7 @@ the project is executed
 
 import config.config as cf
 from data_importation.src.import_data import download_dataset
-from data_validation.src.validate_data import DatasetValidator
+from data_validation.src.validate_data import DatasetValidatorExtractor
 
 def display_menu():
     """Display all the options available"""
@@ -31,7 +31,7 @@ def main():
                 cf.ANNOTATION_DIR
             )
         elif choice == "2":
-            DatasetValidator(
+            DatasetValidatorExtractor(
                 cf.IMAGE_DIR,
                 cf.ANNOTATION_DIR
             ).validate()
