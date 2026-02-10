@@ -26,7 +26,7 @@ class DatasetValidatorExtractor:
         
         Args:
             images_dir: Path to directory containing images
-            annotations_dir: Path to directory containing annotations
+            annotations_dir: Path to directory containing annotations (.txt files)
         """
         self.images_dir = Path(images_dir)
         self.annotations_dir = Path(annotations_dir)
@@ -219,30 +219,39 @@ class DatasetValidatorExtractor:
 
     def _retrieve_annotations(self):
         """
-        Retrieve annotations from a zip file
+        Retrieve annotations from .txt files directly in the annotations directory
         
         Returns:
-            Dictionnary {raw_file_name: annotation_content}
+            Dictionnary {file_stem: annotation_content}
         """
         annotations = {}
 
-        # Retrieving the zip file
-        zip_files = list(self.annotations_dir.rglob("*.zip"))
+        # Lire directement les fichiers .txt dans le répertoire annotations
+        txt_files = list(self.annotations_dir.glob("*.txt"))
 
-        if zip_files:
-            zip_path = zip_files[0]
-            print(f"Reading annotations from {zip_path.name}")
-            with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                for file_info in zip_ref.filelist:
-                    if file_info.filename.endswith('.txt'):
-                        stem = Path(file_info.filename).stem
-                        content = zip_ref.read(file_info.filename).decode('utf-8')
-                        annotations[stem] = content
-
-        else:
-            self.errors.append("No zip annotation file found")
+        if not txt_files:
+            self.errors.append("No .txt annotation files found in annotations directory")
             return None
 
+        print(f"Reading annotations from {self.annotations_dir}")
+
+        for txt_file in txt_files:
+            # Ignorer data.yaml ou autres fichiers non-annotations
+            if txt_file.name == "data.yaml" or txt_file.name.startswith("_"):
+                continue
+                
+            stem = txt_file.stem
+            try:
+                content = txt_file.read_text(encoding='utf-8')
+                annotations[stem] = content
+            except Exception as e:
+                self.errors.append(f"Error reading {txt_file.name}: {e}")
+
+        if len(annotations) == 0:
+            self.errors.append("No valid .txt annotations found")
+            return None
+
+        print(f"Loaded {len(annotations)} annotations")
         return annotations
 
     def _print_report(self) -> None:

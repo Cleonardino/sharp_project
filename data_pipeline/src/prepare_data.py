@@ -62,33 +62,39 @@ class DatasetSplitter:
 
     def _get_annotations(self) -> Optional[Dict[str, str]]:
         """
-        Retrieve annotations from a zip file (global zip)
+        Retrieve annotations from .txt files directly in the annotations directory
 
         Returns:
             Dict {stem: annotation_content}
         """
         annotations: Dict[str, str] = {}
 
-        zip_files = sorted(self.annotations_dir.glob("*.zip"))
+        # Lire directement les fichiers .txt dans le répertoire annotations
+        txt_files = sorted(self.annotations_dir.glob("*.txt"))
 
-        if not zip_files:
-            self.errors.append("No zip annotation file found")
+        if not txt_files:
+            self.errors.append("No .txt annotation files found in annotations directory")
             return None
-        print(zip_files)
-        zip_path = zip_files[0]
-        print(f"Reading annotations from {zip_path.name}")
 
-        with zipfile.ZipFile(zip_path, "r") as zip_ref:
-            for file_info in zip_ref.filelist:
-                if file_info.filename.lower().endswith(".txt"):
-                    stem = Path(file_info.filename).stem
-                    content = zip_ref.read(file_info.filename).decode("utf-8")
-                    annotations[stem] = content
+        print(f"Reading {len(txt_files)} annotation files from {self.annotations_dir}")
+
+        for txt_file in txt_files:
+            # Ignorer data.yaml ou autres fichiers non-annotations
+            if txt_file.name == "data.yaml" or txt_file.name.startswith("_"):
+                continue
+            
+            stem = txt_file.stem
+            try:
+                content = txt_file.read_text(encoding="utf-8")
+                annotations[stem] = content
+            except Exception as e:
+                self.errors.append(f"Error reading {txt_file.name}: {e}")
 
         if len(annotations) == 0:
-            self.errors.append(f"No .txt annotations found inside {zip_path.name}")
+            self.errors.append("No valid .txt annotations found")
             return None
 
+        print(f"Loaded {len(annotations)} annotations")
         return annotations
 
     def _ensure_annotations_loaded(self) -> None:
@@ -99,12 +105,12 @@ class DatasetSplitter:
     def _load_sample_in_ram(self, image_path: Path) -> Optional[SampleInRAM]:
         """
         Charge une image + annotation YOLO correspondante en RAM.
-        Annotation récupérée depuis un zip global.
+        Annotation récupérée depuis les fichiers .txt
         """
         self._ensure_annotations_loaded()
 
         if self._annotations_cache is None:
-            # zip introuvable ou vide
+            # Pas d'annotations trouvées
             return None
 
         stem = image_path.stem
@@ -113,7 +119,7 @@ class DatasetSplitter:
             if self.skip_missing_annotations:
                 return None
             raise FileNotFoundError(
-                f"Missing annotation .txt for image {stem} inside global zip"
+                f"Missing annotation .txt for image {stem} in {self.annotations_dir}"
             )
 
         image_bytes = image_path.read_bytes()

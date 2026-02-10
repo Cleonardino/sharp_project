@@ -1,4 +1,7 @@
 .venv
 .env
 dataset
+output
 __pycache__
+*.db
+*.pt
