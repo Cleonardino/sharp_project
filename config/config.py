@@ -9,3 +9,7 @@ ANNOTATION_DIR = "./dataset/annotations"
 ANNOTATION_ZIP_DIR = "./dataset/annotations_zip"
 PREPARED_DATA = "./prepared_data"
 CLASS_NAMES = ["0", "1", "2", "3", "4", "5"]
+# MLflow configuration
+MLFLOW_TRACKING_URI="file:./mlruns"
+# local artifact storage
+MLFLOW_ARTIFACT_URI="file:./mlruns/artifacts"

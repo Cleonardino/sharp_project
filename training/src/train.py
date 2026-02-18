@@ -3,34 +3,14 @@ YOLO Training Script with MLflow Integration
 Trains YOLO models using a pre-prepared dataset with dataset.yaml
 """
 
-import os
 from pathlib import Path
 
 import mlflow
 from ultralytics import YOLO
-from dotenv import load_dotenv
-
 
 # ============================================================================
 # Configuration
 # ============================================================================
-
-class TrainingConfig:
-    """Training configuration"""
-
-    # Dataset path
-    DATASET_YAML = Path("prepared_data/dataset.yaml")
-
-    # MLflow settings (loaded from .env)
-    MLFLOW_TRACKING_URI: str = None
-
-    @classmethod
-    def load_env(cls, env_path: str = "config/.env"):
-        """Load environment variables"""
-        load_dotenv(env_path)
-        cls.MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
-        if cls.MLFLOW_TRACKING_URI:
-            mlflow.set_tracking_uri(cls.MLFLOW_TRACKING_URI)
 
 
 # ============================================================================

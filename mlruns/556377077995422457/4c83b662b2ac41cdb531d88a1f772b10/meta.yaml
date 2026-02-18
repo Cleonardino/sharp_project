@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/lucas/Documents/sharp_project/mlruns/556377077995422457/4c83b662b2ac41cdb531d88a1f772b10/artifacts
+end_time: 1771438031583
+entry_point_name: ''
+experiment_id: '556377077995422457'
+lifecycle_stage: active
+run_id: 4c83b662b2ac41cdb531d88a1f772b10
+run_name: brawny-frog-348
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771438031147
+status: 3
+tags: []
+user_id: lucas

@@ -3,22 +3,20 @@ Simple Training Runner
 Uses configuration from train_config.py
 """
 
+import mlflow
 import training.src.train_config as cfg
-from training.src.train import train_yolo, TrainingConfig
-
+from training.src.train import train_yolo
+from config.config import MLFLOW_TRACKING_URI
 
 def run_training(preset: str = None, **overrides):
     """
     Run training with configuration from train_config.py
     
     Args:
-        preset: Name of preset ("quick_test", "baseline", "heavy_aug", "production")
+        preset: Name of preset ("quick_test", "baseline", "heavy_aug")
         **overrides: Any parameters to override
     """
-
-    # Load environment
-    config = TrainingConfig()
-    config.load_env()
+    mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
     # Start with base configuration
     params = {

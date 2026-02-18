@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/lucas/Documents/sharp_project/mlruns/704408990498156121/13e4d270f75247a2a916380d96e5489e/artifacts
+end_time: 1771438030864
+entry_point_name: ''
+experiment_id: '704408990498156121'
+lifecycle_stage: active
+run_id: 13e4d270f75247a2a916380d96e5489e
+run_name: yolo11n.pt_quick_test
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771437733848
+status: 3
+tags: []
+user_id: lucas
