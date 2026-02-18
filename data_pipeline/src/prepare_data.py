@@ -214,11 +214,11 @@ class DatasetSplitter:
                 image_path = images_dir / f"{sample.stem}.jpg"
                 image_path.write_bytes(sample.image_bytes)
 
-                # Write label (for YOLO training)
+                # Write label
                 label_path = labels_dir / f"{sample.stem}.txt"
                 label_path.write_text(sample.annotation_txt, encoding="utf-8")
 
-                # Write annotation (for validation compatibility)
+                # Write annotation
                 annotation_path = annotations_dir / f"{sample.stem}.txt"
                 annotation_path.write_text(sample.annotation_txt, encoding="utf-8")
 
