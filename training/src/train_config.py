@@ -106,6 +106,11 @@ PRESET_BASELINE = {
     "imgsz": 640,
     "batch": 16,
     "run_name": "baseline",
+    "translate": 0.05,
+    "scale": 0.3,
+    "fliplr": 0.3,
+    "hsv_h": 0.02,
+    "hsv_v": 0.5,
 }
 
 PRESET_HEAVY_AUG = {

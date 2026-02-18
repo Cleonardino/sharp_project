@@ -141,6 +141,6 @@ if __name__ == "__main__":
     #     run_name="my_custom_training"
     # )
     
-    print(f"\n✅ Training completed!")
-    print(f"📊 MLflow Run ID: {run_id}")
-    print(f"🔗 View results at: http://localhost:5001")
+    print(f"\nTraining completed!")
+    print(f"MLflow Run ID: {run_id}")
+    print(f"View results at: http://localhost:5001")

@@ -7,6 +7,7 @@ import config.config as cf
 from data_pipeline.src.import_data import download_dataset
 from data_pipeline.src.validate_extract_data import DatasetValidatorExtractor
 from data_pipeline.src.prepare_data import DatasetSplitter
+import training.src.run_train as run_train
 
 def display_menu():
     """Display all the options available"""
@@ -16,6 +17,7 @@ def display_menu():
     print("1. Download Dataset")
     print("2. Validate Dataset")
     print("3. Prepare Dataset")
+    print("4. Run Training")
     print("5. Exit")
     print("="*40)
 
@@ -44,6 +46,8 @@ def main():
                 output_dir=str(cf.PREPARED_DATA),
                 class_names=cf.CLASS_NAMES
             ).write_splits_to_disk()
+        elif choice == "4":
+            run_train(preset="baseline")
         elif choice == "5":
             print("\nExiting now")
             break
