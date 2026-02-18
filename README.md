@@ -18,6 +18,7 @@ All is stored locally, and can be viewed with MLFlow using the command (while at
 ```bash
 mlflow ui --backend-store-uri file:./mlruns
 ```
+Then, it can be accessed with http://127.0.0.1:5000/
 
 # Data pipeline, Model pipeline
 Configuration of all 3 types of training is located at training/src/train_config.py. Each parameter can be changed to your linking. Executing the main.py script at the project's root give you 4 options :
