@@ -1,4 +1,6 @@
-import zipfile
+"""Prépare un dataset YOLO à partir d'un répertoire d'images et d'annotations .txt.
+- Les images sont lues depuis un répertoire spécifié (ex: dataset/images)"""
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional, Tuple, Dict
@@ -84,13 +86,13 @@ class DatasetSplitter:
             # Ignorer data.yaml ou autres fichiers non-annotations
             if txt_file.name == "data.yaml" or txt_file.name.startswith("_"):
                 continue
-            
+
             stem = txt_file.stem
             try:
                 content = txt_file.read_text(encoding="utf-8")
                 annotations[stem] = content
-            except Exception as e:
-                self.errors.append(f"Error reading {txt_file.name}: {e}")
+            except (IOError, OSError) as read_error:
+                self.errors.append(f"Error reading {txt_file.name}: {read_error}")
 
         if len(annotations) == 0:
             self.errors.append("No valid .txt annotations found")
@@ -133,9 +135,6 @@ class DatasetSplitter:
             annotation_txt=annotation_txt
         )
 
-    # -------------------------
-    # Main
-    # -------------------------
     def split(self) -> Tuple[List[SampleInRAM], List[SampleInRAM], List[SampleInRAM]]:
         """
         Split dataset and return 3 datasets fully in RAM:
@@ -196,40 +195,40 @@ class DatasetSplitter:
         print("\n" + "="*80)
         print("STEP 3: WRITING SPLITS TO DISK")
         print("="*80)
-        
-        train_data, val_data, test_data = self.split()
+
+        train_split, val_split, test_split = self.split()
 
         def write_split(samples: List[SampleInRAM], split_name: str) -> None:
             """Write a single split to disk"""
             images_dir = self.output_dir / split_name / "images"
             labels_dir = self.output_dir / split_name / "labels"
             annotations_dir = self.output_dir / split_name / "annotations"
-            
+
             images_dir.mkdir(parents=True, exist_ok=True)
             labels_dir.mkdir(parents=True, exist_ok=True)
             annotations_dir.mkdir(parents=True, exist_ok=True)
-            
+
             # Write images, labels and annotations
             for sample in samples:
                 # Write image
                 image_path = images_dir / f"{sample.stem}.jpg"
                 image_path.write_bytes(sample.image_bytes)
-                
+
                 # Write label (for YOLO training)
                 label_path = labels_dir / f"{sample.stem}.txt"
                 label_path.write_text(sample.annotation_txt, encoding="utf-8")
-                
+
                 # Write annotation (for validation compatibility)
                 annotation_path = annotations_dir / f"{sample.stem}.txt"
                 annotation_path.write_text(sample.annotation_txt, encoding="utf-8")
-            
+
             print(f"  ✓ {split_name:5s}: {len(samples):4d} samples written")
-        
-        write_split(train_data, "train")
-        write_split(val_data, "val")
-        write_split(test_data, "test")
+
+        write_split(train_split, "train")
+        write_split(val_split, "val")
+        write_split(test_split, "test")
         print(f"✓ All splits written to: {self.output_dir}")
-        
+
         self._write_dataset_yaml()
 
         return self.output_dir
@@ -239,51 +238,28 @@ class DatasetSplitter:
         train_images = self.output_dir / "train" / "images"
         val_images = self.output_dir / "val" / "images"
         test_images = self.output_dir / "test" / "images"
-        
+
         if not train_images.exists():
             raise FileNotFoundError(f"Missing: {train_images}")
         if not val_images.exists():
             raise FileNotFoundError(f"Missing: {val_images}")
-        
+
         lines = [
             f"path: {self.output_dir.as_posix()}",
             "train: train/images",
             "val: val/images",
         ]
-        
+
         if test_images.exists():
             lines.append("test: test/images")
-        
+
         lines.extend([
             f"nc: {len(self.class_names)}",
             "names:",
         ])
-        
+
         for i, name in enumerate(self.class_names):
             lines.append(f"  {i}: {name}")
         yaml_path = self.output_dir / "dataset.yaml"
         yaml_path.write_text("\n".join(lines), encoding="utf-8")
         print(f"✓ Dataset YAML created: {yaml_path}")
-
-if __name__ == "__main__":
-    splitter = DatasetSplitter(
-        images_dir="dataset/images",
-        annotations_dir="dataset/annotations",
-        output_dir="output",
-        train_ratio=0.6,
-        val_ratio=0.2,
-        test_ratio=0.2,
-        seed=42,
-        skip_missing_annotations=False
-    )
-
-    train_data, val_data, test_data = splitter.split()
-
-    print(f"Train samples: {len(train_data)}")
-    print(f"Val samples: {len(val_data)}")
-    print(f"Test samples: {len(test_data)}")
-
-    if splitter.errors:
-        print("\nErrors:")
-        for e in splitter.errors:
-            print(" -", e)

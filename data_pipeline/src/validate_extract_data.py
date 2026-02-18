@@ -2,7 +2,6 @@
 Module de validation du dataset SHARP
 Vérifie la cohérence, l'intégrité et les classes du dataset
 """
-import zipfile
 from pathlib import Path
 from PIL import Image
 
@@ -107,8 +106,8 @@ class DatasetValidatorExtractor:
                     if width < 10 or height < 10:
                         invalid_dimensions.append(f"{img_path.name} ({width}x{height})")
 
-            except Exception as e:
-                corrupted_images.append(f"{img_path.name}: {str(e)}")
+            except (IOError, OSError, Image.UnidentifiedImageError) as read_error:
+                corrupted_images.append(f"{img_path.name}: {str(read_error)}")
 
         if corrupted_images:
             self.errors.append(
@@ -167,7 +166,6 @@ class DatasetValidatorExtractor:
                 # Class is an index, needs to be mapped
                 try:
                     class_idx = int(parts[0])
-                    # Supposing the order is 0,1,2,3,4,5.
                     class_names = sorted(list(self.VALID_CLASSES))
 
                     if 0 <= class_idx < len(class_names):
@@ -244,8 +242,8 @@ class DatasetValidatorExtractor:
             try:
                 content = txt_file.read_text(encoding='utf-8')
                 annotations[stem] = content
-            except Exception as e:
-                self.errors.append(f"Error reading {txt_file.name}: {e}")
+            except (IOError, OSError, UnicodeDecodeError) as read_error:
+                self.errors.append(f"Error reading {txt_file.name}: {read_error}")
 
         if len(annotations) == 0:
             self.errors.append("No valid .txt annotations found")

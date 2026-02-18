@@ -15,11 +15,11 @@ def run_training(preset: str = None, **overrides):
         preset: Name of preset ("quick_test", "baseline", "heavy_aug", "production")
         **overrides: Any parameters to override
     """
-    
+
     # Load environment
     config = TrainingConfig()
     config.load_env()
-    
+
     # Start with base configuration
     params = {
         "dataset_yaml": cfg.DATASET_YAML,
@@ -55,7 +55,7 @@ def run_training(preset: str = None, **overrides):
         "amp": cfg.AMP,
         "cache": cfg.CACHE,
     }
-    
+
     # Apply preset if specified
     if preset:
         preset_map = {
@@ -63,19 +63,19 @@ def run_training(preset: str = None, **overrides):
             "baseline": cfg.PRESET_BASELINE,
             "heavy_aug": cfg.PRESET_HEAVY_AUG,
         }
-        
+
         if preset not in preset_map:
             raise ValueError(f"Unknown preset: {preset}. Available: {list(preset_map.keys())}")
-        
+
         preset_config = preset_map[preset]
         params.update(preset_config)
         print(f"\n🎯 Using preset: {preset}")
-    
+
     # Apply manual overrides
     if overrides:
         params.update(overrides)
         print(f"📝 Overrides: {list(overrides.keys())}")
-    
+
     # Print summary
     print("\n" + "="*80)
     print("TRAINING CONFIGURATION")
@@ -89,6 +89,6 @@ def run_training(preset: str = None, **overrides):
     print(f"Experiment:  {params['mlflow_experiment']}")
     print(f"Run name:    {params['run_name']}")
     print("="*80 + "\n")
-    
+
     # Run training
     return train_yolo(**params)
