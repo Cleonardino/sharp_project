@@ -11,7 +11,7 @@ pip install -r requirements.txt
 ```
 
 ## Setting up the .env file
-in the config/ directory, create a file named '.env' containing the picsellia api token (PICSELLIA_TOKEN) and the path to store the mlflow data (MLFLOW_TRACKING_URI). By default, this path may be ./runs/mlflow.
+in the config/ directory, create a file named '.env' containing the picsellia api token (PICSELLIA_TOKEN).
 
 # Meta data store, Model registry
 All is stored locally, and can be viewed with MLFlow using the command (while at the project's root):
