@@ -59,10 +59,6 @@ def gen_frames():
             cv2.putText(frame, label, (x1, y1 - 5),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
 
-        # Afficher le compteur sur l'image
-        cv2.putText(frame, f"Total fingers: {finger_count}", (20, 40),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
         _, buffer = cv2.imencode(".jpg", frame)
         frame_bytes = buffer.tobytes()
 
@@ -210,6 +206,10 @@ def index():
                     Finger Detection Dashboard
                     <span class="status-indicator"></span>
                 </h1>
+                <p class="description">
+                    Real-time finger counting powered by a YOLO model.<br>
+                    Show your hand in front of the camera and watch the count update live.
+                </p>
                 
                 <div class="video-container">
                     <img src="/video" alt="Video Feed">
