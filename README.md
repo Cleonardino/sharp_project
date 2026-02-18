@@ -11,13 +11,14 @@ pip install -r requirements.txt
 ```
 
 ## Setting up the .env file
-in the config/ directory, create a file named '.env' containing the picsellia api token (PICSELLIA_TOKEN) and the path to store the mlflow data (MLFLOW_TRACKING_URI). By default, this path may be ./runs/mlflow.
+in the config/ directory, create a file named '.env' containing the picsellia api token (PICSELLIA_TOKEN).
 
 # Meta data store, Model registry
 All is stored locally, and can be viewed with MLFlow using the command (while at the project's root):
 ```bash
 mlflow ui --backend-store-uri file:./mlruns
 ```
+Then, it can be accessed with http://127.0.0.1:5000/
 
 # Data pipeline, Model pipeline
 Configuration of all 3 types of training is located at training/src/train_config.py. Each parameter can be changed to your linking. Executing the main.py script at the project's root give you 4 options :
