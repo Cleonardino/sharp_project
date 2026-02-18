@@ -1,5 +1,8 @@
-import cv2
+"""
+Entrypoint for the serving app. Used with the uvicorn command (seek the README.md)
+"""
 import atexit
+import cv2
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse, HTMLResponse, JSONResponse
 from ultralytics import YOLO
@@ -19,6 +22,9 @@ if not cap.isOpened():
 # Libération propre de la webcam
 @atexit.register
 def cleanup():
+    """
+    Clean the webcam
+    """
     cap.release()
 
 # Variable globale pour le compteur
@@ -28,6 +34,9 @@ current_finger_count = 0
 # Générateur de frames MJPEG
 # -----------------------------
 def gen_frames():
+    """
+    Generate the frames for the app, based on the webcam input
+    """
     global current_finger_count
     while True:
         ret, frame = cap.read()
@@ -66,6 +75,9 @@ def gen_frames():
 # -----------------------------
 @app.get("/")
 def index():
+    """
+    Return the endpoint of FastAPI
+    """
     return HTMLResponse(
         """
         <!DOCTYPE html>
@@ -236,6 +248,9 @@ def index():
 
 @app.get("/video")
 def video_feed():
+    """
+    Getting the video
+    """
     return StreamingResponse(
         gen_frames(),
         media_type="multipart/x-mixed-replace; boundary=frame",
@@ -244,4 +259,7 @@ def video_feed():
 
 @app.get("/count")
 def get_count():
+    """
+    Get the count
+    """
     return JSONResponse({"fingers": current_finger_count})
