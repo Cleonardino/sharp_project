@@ -62,13 +62,13 @@ PATIENCE = 30  # Early stopping patience
 
 # HSV augmentation
 HSV_H = 0.015  # Hue
-HSV_S = 0.7    # Saturation
-HSV_V = 0.4    # Value/Brightness
+HSV_S = 0.6    # Saturation
+HSV_V = 0.35    # Value/Brightness
 
 # Geometric augmentation
-DEGREES = 0.0      # Rotation
-TRANSLATE = 0.1    # Translation
-SCALE = 0.5        # Scale
+DEGREES = 5.0      # Rotation
+TRANSLATE = 0.05    # Translation
+SCALE = 0.2        # Scale
 SHEAR = 0.0        # Shear
 PERSPECTIVE = 0.0  # Perspective
 
@@ -77,8 +77,8 @@ FLIPUD = 0.0  # Vertical flip
 FLIPLR = 0.5  # Horizontal flip
 
 # Advanced augmentation
-MOSAIC = 1.0      # Mosaic (4 images)
-MIXUP = 0.1       # MixUp (2 images)
+MOSAIC = 0      # Mosaic
+MIXUP = 0       # MixUp
 COPY_PASTE = 0.0  # Copy-paste
 
 
@@ -91,7 +91,7 @@ CACHE = False      # Cache images in RAM (faster but uses more memory)
 
 
 # ============================================================================
-# Presets (Quick configurations)
+# Presets
 # ============================================================================
 
 PRESET_QUICK_TEST = {
@@ -102,34 +102,16 @@ PRESET_QUICK_TEST = {
 }
 
 PRESET_BASELINE = {
-    "epochs": 10,
+    "epochs": 80,
     "imgsz": 640,
     "batch": 16,
+    "patience": 20,
     "run_name": "baseline",
-    "translate": 0.05,
-    "scale": 0.3,
-    "fliplr": 0.3,
-    "hsv_h": 0.02,
-    "hsv_v": 0.5,
 }
 
 PRESET_HEAVY_AUG = {
     "epochs": 150,
-    "model_size": "s",
-    "hsv_h": 0.03,
-    "hsv_s": 0.9,
-    "hsv_v": 0.6,
-    "degrees": 15.0,
-    "translate": 0.2,
-    "scale": 0.9,
-    "mixup": 0.3,
-    "run_name": "heavy_augmentation",
-}
-
-PRESET_PRODUCTION = {
-    "epochs": 200,
-    "model_size": "m",
+    "imgsz": 640,
     "batch": 32,
-    "patience": 50,
-    "run_name": "production",
+    "run_name": "heavy_augmentation",
 }
