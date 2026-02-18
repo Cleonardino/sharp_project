@@ -72,20 +72,161 @@ def index():
         <html lang="fr">
         <head>
             <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Finger Detection</title>
+            <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    min-height: 100vh;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    padding: 20px;
+                }
+                
+                .container {
+                    background: white;
+                    border-radius: 20px;
+                    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                    padding: 40px;
+                    max-width: 900px;
+                    width: 100%;
+                    margin-top: 20px;
+                }
+                
+                h1 {
+                    color: #333;
+                    text-align: center;
+                    margin-bottom: 30px;
+                    font-size: 2.5em;
+                    font-weight: 600;
+                }
+                
+                .video-container {
+                    position: relative;
+                    width: 100%;
+                    border-radius: 15px;
+                    overflow: hidden;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                    margin-bottom: 30px;
+                }
+                
+                .video-container img {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                }
+                
+                .counter-box {
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    border-radius: 15px;
+                    padding: 30px;
+                    text-align: center;
+                    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+                }
+                
+                .counter-label {
+                    color: rgba(255, 255, 255, 0.9);
+                    font-size: 1.2em;
+                    margin-bottom: 10px;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    font-weight: 500;
+                }
+                
+                .counter-value {
+                    color: white;
+                    font-size: 4em;
+                    font-weight: 700;
+                    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                    transition: transform 0.3s ease;
+                }
+                
+                .counter-value.pulse {
+                    animation: pulse 0.3s ease;
+                }
+                
+                @keyframes pulse {
+                    0%, 100% {
+                        transform: scale(1);
+                    }
+                    50% {
+                        transform: scale(1.1);
+                    }
+                }
+                
+                .status-indicator {
+                    display: inline-block;
+                    width: 12px;
+                    height: 12px;
+                    background: #4ade80;
+                    border-radius: 50%;
+                    animation: blink 2s infinite;
+                    margin-left: 10px;
+                }
+                
+                @keyframes blink {
+                    0%, 100% { opacity: 1; }
+                    50% { opacity: 0.3; }
+                }
+                
+                @media (max-width: 768px) {
+                    .container {
+                        padding: 20px;
+                    }
+                    
+                    h1 {
+                        font-size: 1.8em;
+                    }
+                    
+                    .counter-value {
+                        font-size: 3em;
+                    }
+                }
+            </style>
         </head>
-        <body style="text-align:center; font-family:Arial;">
-            <h1>Finger Detection Dashboard</h1>
-            <img src="/video" width="800"><br>
-            <h2>Fingers detected: <span id="count">0</span></h2>
+        <body>
+            <div class="container">
+                <h1>
+                    Finger Detection Dashboard
+                    <span class="status-indicator"></span>
+                </h1>
+                
+                <div class="video-container">
+                    <img src="/video" alt="Video Feed">
+                </div>
+                
+                <div class="counter-box">
+                    <div class="counter-label">Fingers Detected</div>
+                    <div class="counter-value" id="count">0</div>
+                </div>
+            </div>
 
             <script>
+                let lastCount = 0;
+                
                 async function updateCount() {
                     const res = await fetch('/count');
                     const data = await res.json();
-                    document.getElementById('count').innerText = data.fingers;
+                    const countElement = document.getElementById('count');
+                    
+                    if (data.fingers !== lastCount) {
+                        countElement.classList.add('pulse');
+                        setTimeout(() => countElement.classList.remove('pulse'), 300);
+                        lastCount = data.fingers;
+                    }
+                    
+                    countElement.innerText = data.fingers;
                 }
-                setInterval(updateCount, 200); // mise à jour toutes les 200ms
+                
+                setInterval(updateCount, 200);
             </script>
         </body>
         </html>

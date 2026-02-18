@@ -102,27 +102,27 @@ PRESET_QUICK_TEST = {
 }
 
 PRESET_BASELINE = {
-    "epochs": 10,
+    "epochs": 50,
     "imgsz": 640,
     "batch": 16,
     "run_name": "baseline",
 }
 
 PRESET_HEAVY_AUG = {
-    "epochs": 150,
+    "epochs": 10,
     "model_size": "s",
     "hsv_h": 0.03,
     "hsv_s": 0.9,
     "hsv_v": 0.6,
     "degrees": 15.0,
-    "translate": 0.2,
-    "scale": 0.9,
+    "translate": 0.05,
+    "scale": 0.4,
     "mixup": 0.3,
     "run_name": "heavy_augmentation",
 }
 
 PRESET_PRODUCTION = {
-    "epochs": 200,
+    "epochs": 20,
     "model_size": "m",
     "batch": 32,
     "patience": 50,
