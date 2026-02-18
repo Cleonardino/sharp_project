@@ -1,0 +1,14 @@
+artifact_uri: file:///C:/Users/lucas/Documents/sharp_project/runs2/mlflow/302098879581374632/cc23e4d7d8754e6f91b10604f417018b/artifacts
+end_time: 1771418678879
+entry_point_name: ''
+experiment_id: '302098879581374632'
+lifecycle_stage: active
+run_id: cc23e4d7d8754e6f91b10604f417018b
+run_name: yolo11n.pt_heavy_augmentation
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1771410702056
+status: 3
+tags: []
+user_id: lucas
