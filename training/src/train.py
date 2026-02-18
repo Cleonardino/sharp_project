@@ -79,7 +79,7 @@ def train_yolo(
     perspective: float = 0.0,
     flipud: float = 0.0,
     fliplr: float = 0.5,
-    mosaic: float = 1.0,
+    mosaic: float = 0,
     mixup: float = 0.1,
     copy_paste: float = 0.0,
     
@@ -97,7 +97,7 @@ def train_yolo(
         epochs: Number of training epochs
         imgsz: Input image size
         batch: Batch size
-        device: Device ("0" for GPU, "cpu", "mps" for Mac)
+        device: Device
         workers: Number of data loading workers
         seed: Random seed for reproducibility
         mlflow_experiment: MLflow experiment name
@@ -262,8 +262,8 @@ def train_yolo(
                 mlflow.log_metric("test_map50_95", float(test_metrics.box.map))
                 mlflow.log_metric("test_map50", float(test_metrics.box.map50))
                 mlflow.log_metric("test_map75", float(test_metrics.box.map75))
-                print(f"  ✓ Test mAP50-95: {test_metrics.box.map:.4f}")
-                print(f"  ✓ Test mAP50:    {test_metrics.box.map50:.4f}")
+                print(f"Test mAP50-95: {test_metrics.box.map:.4f}")
+                print(f"Test mAP50:    {test_metrics.box.map50:.4f}")
             except Exception as e:
                 print(f"  ⚠ Could not evaluate on test set: {e}")
         
@@ -281,62 +281,3 @@ def train_yolo(
         print("="*80 + "\n")
         
         return run_id
-
-
-# ============================================================================
-# Entry Point
-# ============================================================================
-
-if __name__ == "__main__":
-    # Load environment variables
-    config = TrainingConfig()
-    config.load_env()
-    
-    # Train YOLO model
-    run_id = train_yolo(
-        # Dataset
-        dataset_yaml="prepared_data/dataset.yaml",
-        
-        # Model
-        model_family="yolo11",
-        model_size="n",
-        
-        # Training
-        epochs=80,
-        imgsz=640,
-        batch=16,
-        device="cpu",  # Change to "0" for GPU, "mps" for Mac
-        workers=8,
-        seed=42,
-        
-        # MLflow
-        mlflow_experiment="yolo_training",
-        run_name="yolo11n_baseline",
-        
-        # Output
-        project="runs",
-        
-        # Optimizer
-        lr0=0.01,
-        lrf=0.01,
-        weight_decay=0.0005,
-        warmup_epochs=3.0,
-        patience=30,
-        
-        # Augmentation
-        hsv_h=0.015,
-        hsv_s=0.7,
-        hsv_v=0.4,
-        degrees=0.0,
-        translate=0.1,
-        scale=0.5,
-        fliplr=0.5,
-        mosaic=1.0,
-        mixup=0.1,
-        
-        # Other
-        amp=True,
-        cache=False,
-    )
-    
-    print(f"✅ Training completed! MLflow Run ID: {run_id}")

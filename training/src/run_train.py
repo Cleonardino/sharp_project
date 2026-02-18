@@ -3,8 +3,8 @@ Simple Training Runner
 Uses configuration from train_config.py
 """
 
-import train_config as cfg
-from train import train_yolo, TrainingConfig
+import training.src.train_config as cfg
+from training.src.train import train_yolo, TrainingConfig
 
 
 def run_training(preset: str = None, **overrides):
@@ -14,19 +14,6 @@ def run_training(preset: str = None, **overrides):
     Args:
         preset: Name of preset ("quick_test", "baseline", "heavy_aug", "production")
         **overrides: Any parameters to override
-        
-    Examples:
-        # Default configuration
-        run_training()
-        
-        # With preset
-        run_training(preset="quick_test")
-        
-        # With overrides
-        run_training(preset="baseline", epochs=100, device="0")
-        
-        # Fully custom
-        run_training(device="cpu", epochs=50, batch=8)
     """
     
     # Load environment
@@ -75,7 +62,6 @@ def run_training(preset: str = None, **overrides):
             "quick_test": cfg.PRESET_QUICK_TEST,
             "baseline": cfg.PRESET_BASELINE,
             "heavy_aug": cfg.PRESET_HEAVY_AUG,
-            "production": cfg.PRESET_PRODUCTION,
         }
         
         if preset not in preset_map:
@@ -106,41 +92,3 @@ def run_training(preset: str = None, **overrides):
     
     # Run training
     return train_yolo(**params)
-
-
-if __name__ == "__main__":
-    # ========================================================================
-    # CHOOSE YOUR CONFIGURATION
-    # ========================================================================
-    
-    # Option 1: Quick test (5 epochs - for testing setup)
-    # run_id = run_training(preset="quick_test")
-    
-    # Option 2: Baseline (standard 80 epochs training)
-    run_id = run_training(preset="baseline")
-    
-    # Option 3: Heavy augmentation (150 epochs with strong augmentation)
-    # run_id = run_training(preset="heavy_aug")
-    
-    # Option 4: Production (200 epochs, best model)
-    # run_id = run_training(preset="production")
-    
-    # Option 5: Custom with overrides
-    # run_id = run_training(
-    #     preset="baseline",
-    #     device="cpu",      # Change device
-    #     epochs=100,        # More epochs
-    #     batch=8,           # Smaller batch
-    # )
-    
-    # Option 6: Fully custom (no preset)
-    # run_id = run_training(
-    #     device="cpu",
-    #     epochs=50,
-    #     batch=16,
-    #     run_name="my_custom_training"
-    # )
-    
-    print(f"\n✅ Training completed!")
-    print(f"📊 MLflow Run ID: {run_id}")
-    print(f"🔗 View results at: http://localhost:5001")

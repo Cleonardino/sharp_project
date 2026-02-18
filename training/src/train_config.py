@@ -14,8 +14,8 @@ DATASET_YAML = "prepared_data/dataset.yaml"
 # Model Configuration
 # ============================================================================
 
-MODEL_FAMILY = "yolo11"  # "yolo11" or "yolo26"
-MODEL_SIZE = "n"         # "n", "s", "m", "l", "x"
+MODEL_FAMILY = "yolo11"
+MODEL_SIZE = "n"
 
 
 # ============================================================================
@@ -25,7 +25,7 @@ MODEL_SIZE = "n"         # "n", "s", "m", "l", "x"
 EPOCHS = 80
 IMAGE_SIZE = 640
 BATCH_SIZE = 16
-DEVICE = "cpu"  # "0" for GPU, "cpu" for CPU, "mps" for Mac
+DEVICE = "cpu"
 WORKERS = 8
 SEED = 42
 
@@ -42,7 +42,7 @@ RUN_NAME = "yolo11n_baseline"
 # Output Settings
 # ============================================================================
 
-PROJECT_DIR = "runs"  # Directory where Ultralytics saves results
+PROJECT_DIR = "mlruns"
 
 
 # ============================================================================
@@ -62,13 +62,13 @@ PATIENCE = 30  # Early stopping patience
 
 # HSV augmentation
 HSV_H = 0.015  # Hue
-HSV_S = 0.7    # Saturation
-HSV_V = 0.4    # Value/Brightness
+HSV_S = 0.6    # Saturation
+HSV_V = 0.35    # Value/Brightness
 
 # Geometric augmentation
-DEGREES = 0.0      # Rotation
-TRANSLATE = 0.1    # Translation
-SCALE = 0.5        # Scale
+DEGREES = 5.0      # Rotation
+TRANSLATE = 0.05    # Translation
+SCALE = 0.2        # Scale
 SHEAR = 0.0        # Shear
 PERSPECTIVE = 0.0  # Perspective
 
@@ -77,8 +77,8 @@ FLIPUD = 0.0  # Vertical flip
 FLIPLR = 0.5  # Horizontal flip
 
 # Advanced augmentation
-MOSAIC = 1.0      # Mosaic (4 images)
-MIXUP = 0.1       # MixUp (2 images)
+MOSAIC = 0      # Mosaic
+MIXUP = 0       # MixUp
 COPY_PASTE = 0.0  # Copy-paste
 
 
@@ -87,11 +87,11 @@ COPY_PASTE = 0.0  # Copy-paste
 # ============================================================================
 
 AMP = True         # Automatic Mixed Precision
-CACHE = False      # Cache images in RAM (faster but uses more memory)
+CACHE = False      # Cache images in RAM
 
 
 # ============================================================================
-# Presets (Quick configurations)
+# Presets
 # ============================================================================
 
 PRESET_QUICK_TEST = {
@@ -102,29 +102,16 @@ PRESET_QUICK_TEST = {
 }
 
 PRESET_BASELINE = {
-    "epochs": 50,
+    "epochs": 80,
     "imgsz": 640,
     "batch": 16,
+    "patience": 20,
     "run_name": "baseline",
 }
 
 PRESET_HEAVY_AUG = {
-    "epochs": 10,
-    "model_size": "s",
-    "hsv_h": 0.03,
-    "hsv_s": 0.9,
-    "hsv_v": 0.6,
-    "degrees": 15.0,
-    "translate": 0.05,
-    "scale": 0.4,
-    "mixup": 0.3,
-    "run_name": "heavy_augmentation",
-}
-
-PRESET_PRODUCTION = {
-    "epochs": 20,
-    "model_size": "m",
+    "epochs": 150,
+    "imgsz": 640,
     "batch": 32,
-    "patience": 50,
-    "run_name": "production",
+    "run_name": "heavy_augmentation",
 }
