@@ -59,7 +59,6 @@ def main():
             ).write_splits_to_disk()
         elif choice == "4":
             display_training_menu()
-            
             preset = input("\nEnter your choice (1-4): ").strip()
             if preset == "1":
                 run_training(preset="quick_test")
