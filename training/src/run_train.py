@@ -14,19 +14,6 @@ def run_training(preset: str = None, **overrides):
     Args:
         preset: Name of preset ("quick_test", "baseline", "heavy_aug", "production")
         **overrides: Any parameters to override
-        
-    Examples:
-        # Default configuration
-        run_training()
-        
-        # With preset
-        run_training(preset="quick_test")
-        
-        # With overrides
-        run_training(preset="baseline", epochs=100, device="0")
-        
-        # Fully custom
-        run_training(device="cpu", epochs=50, batch=8)
     """
     
     # Load environment

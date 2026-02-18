@@ -14,8 +14,8 @@ DATASET_YAML = "prepared_data/dataset.yaml"
 # Model Configuration
 # ============================================================================
 
-MODEL_FAMILY = "yolo11"  # "yolo11" or "yolo26"
-MODEL_SIZE = "n"         # "n", "s", "m", "l", "x"
+MODEL_FAMILY = "yolo11"
+MODEL_SIZE = "n"
 
 
 # ============================================================================
@@ -25,7 +25,7 @@ MODEL_SIZE = "n"         # "n", "s", "m", "l", "x"
 EPOCHS = 80
 IMAGE_SIZE = 640
 BATCH_SIZE = 16
-DEVICE = "cpu"  # "0" for GPU, "cpu" for CPU, "mps" for Mac
+DEVICE = "cpu"
 WORKERS = 8
 SEED = 42
 
@@ -42,7 +42,7 @@ RUN_NAME = "yolo11n_baseline"
 # Output Settings
 # ============================================================================
 
-PROJECT_DIR = "runs"  # Directory where Ultralytics saves results
+PROJECT_DIR = "mlruns"
 
 
 # ============================================================================
@@ -87,7 +87,7 @@ COPY_PASTE = 0.0  # Copy-paste
 # ============================================================================
 
 AMP = True         # Automatic Mixed Precision
-CACHE = False      # Cache images in RAM (faster but uses more memory)
+CACHE = False      # Cache images in RAM
 
 
 # ============================================================================

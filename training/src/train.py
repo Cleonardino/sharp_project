@@ -97,7 +97,7 @@ def train_yolo(
         epochs: Number of training epochs
         imgsz: Input image size
         batch: Batch size
-        device: Device ("0" for GPU, "cpu", "mps" for Mac)
+        device: Device
         workers: Number of data loading workers
         seed: Random seed for reproducibility
         mlflow_experiment: MLflow experiment name
